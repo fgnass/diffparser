@@ -3,7 +3,7 @@
 # Unified diff parser for Node and the browser
 
 This project is a ES2015 version of
-https://www.npmjs.com/package/diff-parser.
+https://github.com/sergeyt/parse-diff.
 
 It comes with a full test suite and in addition to line numbers also provides `position` information as required by the [GitHub Comments API](https://developer.github.com/v3/pulls/comments/#create-a-comment).
 
