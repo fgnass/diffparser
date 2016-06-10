@@ -1,6 +1,6 @@
 {
   "name": "diffparser",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Unified diff parser",
   "author": "Felix Gnass <fgnass@gmail.com>",
   "repository": "fgnass/diffparser",
