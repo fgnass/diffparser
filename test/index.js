@@ -1,6 +1,6 @@
 /* eslint-env mocha */
 import expect from 'unexpected';
-import parse from '..';
+import parse from '../src';
 
 describe('diff parser', () => {
   it('should parse null', () => {
