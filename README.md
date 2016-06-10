@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/fgnass/diffparser.svg?branch=master)](https://travis-ci.org/fgnass/diffparser)
+
 # Unified diff parser for Node and the browser
 
 This project is a ES2015 version of
