@@ -65,6 +65,45 @@ This will return an array (one entry per file) with the following structure:
 ]
 ```
 
+## Optional Rename Detection
+
+You can pass `{ findRenames: true }` as option in order to detect renamed files:
+
+```js
+const diff = `
+diff --git a/bar b/bar
+new file mode 100644
+index 0000000..4e4b354
+--- /dev/null
++++ b/bar
+@@ -0,0 +1,2 @@
++this is a
++sample file
+diff --git a/foo b/foo
+deleted file mode 100644
+index 4e4b354..0000000
+--- a/foo
++++ /dev/null
+@@ -1,2 +0,0 @@
+-this is a
+-sample file
+`;
+
+parse(diff, { findRenames: true });
+```
+
+This will return the following array:
+
+```js
+[
+  {
+    "renamed": true,
+    "from": "foo",
+    "to": "bar"
+  }
+]
+```
+
 # License
 
 MIT

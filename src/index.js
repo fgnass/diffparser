@@ -2,7 +2,7 @@
  * Parse unified diff input
  * see: http://www.gnu.org/software/diffutils/manual/diffutils.html#Unified-Format
  */
-export default function (input) {
+export default function (input, opts = {}) {
   if (!input) return [];
   if (input.match(/^\s+$/)) return [];
 
@@ -141,7 +141,31 @@ export default function (input) {
   }
 
   lines.forEach(parse);
+  if (opts.findRenames) consolidateRenames(files);
   return files;
+}
+
+function getContent(file) {
+  return file.chunks.map(chunk => chunk.changes.map(c => c.content.slice(1))).join('\n');
+}
+
+function consolidateRenames(files) {
+  const newFiles = files.filter(f => f.new);
+  newFiles.forEach(newFile => {
+    const newContent = getContent(newFile);
+    const i = files.findIndex(f => f.deleted && getContent(f) == newContent);
+    if (~i) {
+      const oldFile = files[i];
+      files.splice(i, 1);
+      delete newFile.new;
+      delete newFile.chunks;
+      delete newFile.deletions;
+      delete newFile.additions;
+      delete newFile.index;
+      newFile.renamed = true;
+      newFile.from = oldFile.from;
+    }
+  });
 }
 
 function parseFile(s) {

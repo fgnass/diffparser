@@ -302,4 +302,31 @@ index e6a2e28..0000000
       to: '/dev/null',
     });
   });
+
+  it('should detect renamed files', () => {
+    const diff = `
+diff --git a/bar b/bar
+new file mode 100644
+index 0000000..4e4b354
+--- /dev/null
++++ b/bar
+@@ -0,0 +1,2 @@
++this is a
++sample file
+diff --git a/foo b/foo
+deleted file mode 100644
+index 4e4b354..0000000
+--- a/foo
++++ /dev/null
+@@ -1,2 +0,0 @@
+-this is a
+-sample file
+`;
+    const files = parse(diff, { findRenames: true });
+    expect(files, 'to equal', [{
+      renamed: true,
+      from: 'foo',
+      to: 'bar',
+    }]);
+  });
 });
