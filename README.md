@@ -37,14 +37,14 @@ This will return an array (one entry per file) with the following structure:
           {
             "type": "del",
             "del": true,
-            "ln": 1,
+            "oldLine": 1,
             "position": 1,
             "content": "- line1"
           },
           {
             "type": "add",
             "add": true,
-            "ln": 1,
+            "newLine": 1,
             "position": 2,
             "content": "+ line2"
           }
