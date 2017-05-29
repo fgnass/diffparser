@@ -332,8 +332,8 @@ index b2c7faf..2ee2ba2 100644
       { content: '+import newdep from \'newdep\';', type: 'add', position: 4, newLine: 39 },
       { content: ' import {bla} from \'bla\';', type: 'normal', position: 5, oldLine: 39, newLine: 40 },
       { content: ' import {qwe} from \'qwe\';', type: 'normal', position: 6, oldLine: 40, newLine: 41 },
-      { content: ' import {ertyu} from \'ertyu\';', type: 'normal', position: 7, oldLine: 41, newLine: 42 }
-    ])
+      { content: ' import {ertyu} from \'ertyu\';', type: 'normal', position: 7, oldLine: 41, newLine: 42 },
+    ]);
   });
 
   it('should parse line numbers for a file with multiple hunks', () => {
@@ -366,7 +366,8 @@ index 7147fac..1c70551 100644
    this.storage.findAll((data) => {
      data.forEach((todo) => {
        if (todo.completed) {
-`
+`;
+
     const files = parse(diff);
     const f1 = files[0];
     const c1 = f1.chunks[0];

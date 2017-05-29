@@ -11,6 +11,7 @@
     "one-var": [2, "never"],
     "padded-blocks": 0,
     "vars-on-top": 0,
+    "max-len": 0,
     "no-console": 0,
     "no-param-reassign": 0,
     "no-use-before-define": 0
