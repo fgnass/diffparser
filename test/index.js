@@ -36,10 +36,14 @@ index 123..456 789
     const chunk = file.chunks[0];
     expect(chunk.content, 'to be', '@@ -1,2 +1,2 @@');
     expect(chunk.changes, 'to have length', 2);
+    expect(chunk.changes[0].type, 'to be', 'del');
     expect(chunk.changes[0].content, 'to be', '- line1');
     expect(chunk.changes[0].position, 'to be', 1);
+    expect(chunk.changes[0].oldLine, 'to be', 1);
+    expect(chunk.changes[1].type, 'to be', 'add');
     expect(chunk.changes[1].content, 'to be', '+ line2');
     expect(chunk.changes[1].position, 'to be', 2);
+    expect(chunk.changes[1].newLine, 'to be', 1);
   });
 
   it('should parse diff with new file mode line', () => {
@@ -63,8 +67,8 @@ index 0000000..db81be4
     const chunk = file.chunks[0];
     expect(chunk.content, 'to be', '@@ -0,0 +1,2 @@');
     expect(chunk.changes, 'to satisfy', [
-      { content: '+line1', position: 1 },
-      { content: '+line2', position: 2 },
+      { content: '+line1', position: 1, type: 'add', newLine: 1 },
+      { content: '+line2', position: 2, type: 'add', newLine: 2 },
     ]);
   });
 
@@ -88,8 +92,8 @@ index db81be4..0000000
     const chunk = file.chunks[0];
     expect(chunk.content, 'to be', '@@ -1,2 +0,0 @@');
     expect(chunk.changes, 'to satisfy', [
-      { content: '-line1', position: 1 },
-      { content: '-line2', position: 2 },
+      { content: '-line1', position: 1, type: 'del', oldLine: 1 },
+      { content: '-line2', position: 2, type: 'del', oldLine: 2 },
     ]);
   });
 
@@ -125,12 +129,12 @@ index 0000000..db81be4
     const c1 = f1.chunks[0];
     expect(c1.content, 'to be', '@@ -1 +0,0 @@');
     expect(c1.changes, 'to satisfy', [
-      { content: '-line1', position: 1, type: 'del' },
+      { content: '-line1', position: 1, type: 'del', oldLine: 1 },
     ]);
     const c2 = f2.chunks[0];
     expect(c2.content, 'to be', '@@ -0,0 +1 @@');
     expect(c2.changes, 'to satisfy', [
-      { content: '+line1', position: 1, type: 'add' },
+      { content: '+line1', position: 1, type: 'add', newLine: 1 },
     ]);
   });
 
@@ -161,15 +165,15 @@ index 123..456 789
     const c1 = f1.chunks[0];
     expect(c1.content, 'to be', '@@ -1,2 +1,2 @@');
     expect(c1.changes, 'to satisfy', [
-      { content: '- line1', position: 1 },
-      { content: '+ line2', position: 2 },
+      { content: '- line1', position: 1, type: 'del', oldLine: 1 },
+      { content: '+ line2', position: 2, type: 'add', newLine: 1 },
     ]);
 
     const c2 = f2.chunks[0];
     expect(c2.content, 'to be', '@@ -1,3 +1,3 @@');
     expect(c2.changes, 'to satisfy', [
-      { content: '- line1' },
-      { content: '+ line2' },
+      { content: '- line1', type: 'del', oldLine: 1 },
+      { content: '+ line2', type: 'add', newLine: 1 },
     ]);
   });
 
@@ -302,4 +306,80 @@ index e6a2e28..0000000
       to: '/dev/null',
     });
   });
+
+  it('should parse line numbers for a file with a single hunk', () => {
+    const diff = `
+diff --git a/js/foo.js b/js/foo.js
+index b2c7faf..2ee2ba2 100644
+--- a/js/foo.js
++++ b/js/foo.js
+@@ -36,6 +36,7 @@ export type SomeContext = {
+   foo: bar,
+ };
+ 
++import newdep from 'newdep';
+ import {bla} from 'bla';
+ import {qwe} from 'qwe';
+ import {ertyu} from 'ertyu';
+`
+    const files = parse(diff);
+    const f1 = files[0];
+    const c1 = f1.chunks[0];
+    expect(c1.changes, 'to satisfy', [
+      { content: '   foo: bar,', type: 'normal', position: 1, oldLine: 36, newLine: 36 },
+      { content: ' };', type: 'normal', position: 2, oldLine: 37, newLine: 37 },
+      { content: ' ', type: 'normal', position: 3, oldLine: 38, newLine: 38 },
+      { content: '+import newdep from \'newdep\';', type: 'add', position: 4, newLine: 39 },
+      { content: ' import {bla} from \'bla\';', type: 'normal', position: 5, oldLine: 39, newLine: 40 },
+      { content: ' import {qwe} from \'qwe\';', type: 'normal', position: 6, oldLine: 40, newLine: 41 },
+      { content: ' import {ertyu} from \'ertyu\';', type: 'normal', position: 7, oldLine: 41, newLine: 42 }
+    ])
+  });
+
+  it('should parse line numbers for a file with multiple hunks', () => {
+    const diff = `
+diff --git a/js/model.js b/js/model.js
+index 7147fac..1c70551 100644
+--- a/js/model.js
++++ b/js/model.js
+@@ -17,10 +17,12 @@ export default function Model(storage) {
+ Model.prototype.create = function create(title = '', callback = () => {}) {
+   const newItem = {
+     title: title.trim(),
+-    completed: false,
+-  };
++    completed: false
++  }
++
++
++
+ 
+-  this.storage.save(newItem, callback);
+ };
+ 
+ /**
+@@ -92,7 +94,6 @@ Model.prototype.getCount = function getCount(callback) {
+     completed: 0,
+     total: 0,
+   };
+-
+   this.storage.findAll((data) => {
+     data.forEach((todo) => {
+       if (todo.completed) {
+`
+    const files = parse(diff);
+    const f1 = files[0];
+    const c1 = f1.chunks[0];
+    const c2 = f1.chunks[1];
+
+    expect(c1.changes, 'to contain', { content: '-  };', type: 'del', del: true, position: 5, oldLine: 21 });
+    expect(c1.changes, 'to contain', { content: '+  }', type: 'add', add: true, position: 7, newLine: 21 });
+    expect(c1.changes, 'to contain', { content: '-  this.storage.save(newItem, callback);', type: 'del', del: true, position: 12, oldLine: 23 });
+    expect(c1.changes, 'to contain', { content: ' /**', type: 'normal', normal: true, position: 15, oldLine: 26, newLine: 28 });
+
+    expect(c2.changes, 'to contain', { content: '-', type: 'del', del: true, position: 19, oldLine: 95 });
+    expect(c2.changes, 'to contain', { content: '       if (todo.completed) {', type: 'normal', normal: true, position: 22, oldLine: 98, newLine: 99 });
+  });
+
 });
+

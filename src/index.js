@@ -11,8 +11,8 @@ export default function (input) {
 
   const files = [];
   let file = null;
-  let lnDel = 0;
-  let lnAdd = 0;
+  let oldLine = 0;
+  let newLine = 0;
   let position = 0;
   let current = null;
 
@@ -62,8 +62,8 @@ export default function (input) {
 
   function chunk(line, match) {
     const [, oldStart, oldLines, newStart, newLines] = match.map(l => +(l || 0));
-    lnDel = oldStart;
-    lnAdd = newStart;
+    oldLine = oldStart;
+    newLine = newStart;
     current = {
       content: line,
       changes: [],
@@ -80,7 +80,7 @@ export default function (input) {
     current.changes.push({
       type: 'del',
       del: true,
-      ln: lnDel++,
+      oldLine: oldLine++,
       position: position++,
       content: line,
     });
@@ -91,7 +91,7 @@ export default function (input) {
     current.changes.push({
       type: 'add',
       add: true,
-      ln: lnAdd++,
+      newLine: newLine++,
       position: position++,
       content: line,
     });
@@ -105,8 +105,8 @@ export default function (input) {
     current.changes.push({
       type: 'normal',
       normal: true,
-      ln1: line === noeol ? lnDel++ : undefined,
-      ln2: line === noeol ? lnAdd++ : undefined,
+      oldLine: line !== noeol ? oldLine++ : undefined,
+      newLine: line !== noeol ? newLine++ : undefined,
       position: position++,
       content: line,
     });
