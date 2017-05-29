@@ -307,6 +307,35 @@ index e6a2e28..0000000
     });
   });
 
+  it('should detect renamed files', () => {
+    const diff = `
+diff --git a/bar b/bar
+new file mode 100644
+index 0000000..4e4b354
+--- /dev/null
++++ b/bar
+@@ -0,0 +1,2 @@
++this is a
++sample file
+diff --git a/foo b/foo
+deleted file mode 100644
+index 4e4b354..0000000
+--- a/foo
++++ /dev/null
+@@ -1,2 +0,0 @@
+-this is a
+-sample file
+`;
+
+    const files = parse(diff, { findRenames: true });
+    expect(files, 'to equal', [{
+      renamed: true,
+      from: 'foo',
+      to: 'bar',
+    }]);
+  });
+
+
   it('should parse line numbers for a file with a single hunk', () => {
     const diff = `
 diff --git a/js/foo.js b/js/foo.js
@@ -321,7 +350,8 @@ index b2c7faf..2ee2ba2 100644
  import {bla} from 'bla';
  import {qwe} from 'qwe';
  import {ertyu} from 'ertyu';
-`
+`;
+
     const files = parse(diff);
     const f1 = files[0];
     const c1 = f1.chunks[0];
