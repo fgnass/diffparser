@@ -120,7 +120,7 @@ export default function (input, opts = {}) {
     [/^index\s[\da-zA-Z]+\.\.[\da-zA-Z]+(\s(\d+))?$/, index],
     [/^---\s/, fromFile],
     [/^\+\+\+\s/, toFile],
-    [/^@@\s+\-(\d+),?(\d+)?\s+\+(\d+),?(\d+)?\s@@/, chunk],
+    [/^@@\s+\-(\d+),?(\d*)\s+\+(\d+),?(\d*)\s@@/, chunk],
     [/^-/, del],
     [/^\+/, add],
   ];
