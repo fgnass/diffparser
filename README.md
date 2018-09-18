@@ -9,6 +9,8 @@ It comes with a full test suite and in addition to line numbers also provides `p
 
 ```js
 import parse from 'diffparser';
+// or
+// const parse = require('diffparser');
 
 const diff = `
 diff --git a/file b/file
