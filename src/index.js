@@ -77,6 +77,7 @@ export default function (input, opts = {}) {
   }
 
   function del(line) {
+    if (!file) return;
     current.changes.push({
       type: 'del',
       del: true,
@@ -88,6 +89,7 @@ export default function (input, opts = {}) {
   }
 
   function add(line) {
+    if (!file) return;
     current.changes.push({
       type: 'add',
       add: true,
